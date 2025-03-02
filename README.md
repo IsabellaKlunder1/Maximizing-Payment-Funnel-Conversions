@@ -38,7 +38,7 @@ Results & Business Recommendations:
 2) Error Analysis: Detected both user errors (incomplete data entry) and vendor errors (payment failures).
 3) Recommendations: Optimized payment forms, improved error messaging, and implemented additional tracking mechanisms to monitor customer behavior more effectively.
 4) Business Impact: Implementing these recommendations could result in higher conversion rates and reduced revenue loss.
-
+![Alt text](Subs by year Stage.png)
 
 
 Next Steps:  
