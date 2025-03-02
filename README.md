@@ -11,7 +11,7 @@ This project analyzed a subscription payment funnel with high drop-off rates, re
 
 Business Problem:  
 The company was facing a large loss in revenue due to customers starting a subscription but not completing the payment process. Many customers were abandoning the payment flow after opting for paid plans, which led to a lower-than-desired conversion rate. This issue needed to be resolved to improve customer retention and revenue.
-
+![Alt text](Sub_funnel.png)
 
 
 Methodology:
