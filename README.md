@@ -9,15 +9,16 @@ This project analyzed a subscription payment funnel with high drop-off rates, re
 
 
 Business Problem:  
-The company was experiencing a low conversion rate in its subscription service, with many customers beginning the sign-up process but failing to complete the payment. This created a significant revenue gap, as customers were not successfully transitioning from sign-up to paid subscriptions. The finance team needed insights into why customers were dropping off at various stages of the payment process.
+The company was facing a large loss in revenue due to customers starting a subscription but not completing the payment process. Many customers were abandoning the payment flow after opting for paid plans, which led to a lower-than-desired conversion rate. This issue needed to be resolved to improve customer retention and revenue.
 
 
 Methodology:
-- Analyzed the payment funnel by examining user event data from the **payment_status_log**.  
-- Focused on tracking and measuring key events such as entering the payment portal, submitting payment details, and processing by a third-party vendor.  
-- Identified where customers were abandoning the process or encountering errors.  
-- Used SQL to query and aggregate data to calculate conversion rates at each step and uncover friction points.
-
+Data Cleaning & Preprocessing: Cleaned payment logs, removed incomplete records and merged multiple data sources to track the entire payment process.
+Analytical Techniques:
+Used SQL for data analysis, focusing on identifying friction points in the payment funnel.
+Applied window functions to track customers' progress through the payment process over time.
+Analyzed user and vendor error data to uncover common issues causing drop-offs.
+Tools Used: SQL, Snowflake Data Warehouse, and Data Visualization tools 
 
 Skills: 
 -SQL (CTEs, CASE, subqueries, window functions)
@@ -29,14 +30,13 @@ Skills:
 
 
 Results & Business Recommendations: 
-- Identified key friction points, such as issues with entering payment information and errors with third-party payment processing.  
-- Found that both user errors (e.g., incomplete information) and vendor errors (e.g., card processing failures) contributed to drop-offs.  
-- Recommended improving the payment process by simplifying forms, enhancing error messages, and refining the error handling system.  
-- Suggested adding additional tracking mechanisms for future optimization.
+Friction Points: Identified significant drop-offs at critical stages such as entering payment details and third-party processing.
+Error Analysis: Detected both user errors (incomplete data entry) and vendor errors (payment failures).
+Recommendations: Optimized payment forms, improved error messaging, and implemented additional tracking mechanisms to monitor customer behavior more effectively.
+Business Impact: Implementing these recommendations could result in higher conversion rates and reduced revenue loss.
 
 
 Next Steps:  
-- Implement recommendations to simplify the payment process and address identified friction points.  
-- Continuously monitor user events to assess the impact of changes on conversion rates.  
-- Explore further optimizations based on new data and user feedback.  
-
+Further Data Collection: Collect more granular data on user interactions to improve tracking and error identification.
+Testing: Test the recommended changes to the payment flow to validate their impact on conversion rates.
+Limitations: Some limitations arose from the data availability, which restricted in-depth analysis on certain error types. Further tracking and more detailed event data could provide deeper insights.
