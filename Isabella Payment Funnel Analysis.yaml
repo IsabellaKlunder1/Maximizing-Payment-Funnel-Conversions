@@ -1,0 +1,1187 @@
+schemaVersion: 3
+meta:
+  sourceVersionId: d1b1114f-1a1d-4975-914a-2baf63d8e25d # DO NOT CHANGE - Hex uses this to match up project versions when reimporting the file
+  description: ""
+  projectId: 859882e3-902c-4e48-bc25-a731b94a350a # DO NOT CHANGE - Unique ID of the project from which this file was generated
+  title: "Isabella: Payment Funnel Analysis"
+  timezone: null
+  appTheme: SYS_PREF
+  codeLanguage: PYTHON
+  status: null
+  categories: []
+  castDecimalsDefault: true
+  logicQueryCacheTimeout: null
+  publishedQueryCacheTimeout: null
+  hexType: PROJECT
+  allowExecutionReordering: true
+  prerunApp: false
+  cachePublishedAppState: true
+  refreshStalePublishedApp: false
+  autoRerunApp: true
+projectAssets:
+  dataConnections: []
+  envVars: []
+  secrets: []
+sharedAssets:
+  secrets: []
+  vcsPackages: []
+  dataConnections:
+    - dataConnectionId: 34b92293-aaf9-485d-acf7-db69412e953d # Big SQL Energy Snowflake (snowflake)
+  externalFileIntegrations: []
+cells:
+  - cellType: TEXT
+    cellId: b0d4ca72-330a-4a5b-8e46-b72f6b968448 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    config:
+      richText:
+        - type: h1
+          children:
+            - text: Payment Funnel Analysis
+        - type: p
+          children:
+            - text: "Case Study: Payment Funnel Analysis"
+        - type: paragraph
+          children:
+            - text: "Your finance team comes to you one day asking about why there are so many unpaid subscriptions. Lately, customers have been choosing or opting into a paid subscription plan, but many are not completing the process by paying for their subscription. When customers sign up for a subscription, we consider them to officially be a customer, but they aren’t considered “converted” into a paid plan until they actually pay for their subscription by completing the payment process. Because of this, the company has a less-than-desired conversion rate since many companies have started a subscription but haven’t actually paid yet. This is a huge issue for the company because we have customers who are signing up for our product but aren’t paying— which has resulted in a large loss in revenue. "
+        - type: paragraph
+          children:
+            - text: ""
+        - type: paragraph
+          children:
+            - text: "As a seasoned data analyst, you know that the finance team’s concerns are valid and worth looking into, so you immediately come up with a plan to dig into this. You meet with the product manager, and she walks you through the entire payment process. First, users have to open and enter the payment portal— and you already notice that this could be a large friction point for customers. Once inside the payment portal, they have to enter their credit card information and hit submit. It’s possible for users to hit an error here if they input incorrect or incomplete information. Then the data is sent to a 3rd party payment processing company where the credit card is actually processed. It’s also possible for users to hit an error here if the vendor has an issue processing the card. If everything is successfully completed with the vendor, they send the success message back to us, and we’re able to log the transaction as complete on our side too. "
+        - type: paragraph
+          children:
+            - text: ""
+        - type: paragraph
+          children:
+            - text: "After learning more about the business side of things and what the user sees on the frontend, you have to determine if we even have data to track all of these user events. If the data doesn’t exist, you may have to measure proxies, brainstorm a workaround, and propose new user events to track in order to have better data collection for the future. Luckily, after meeting with your frontend engineer and data engineer, you learn that all of the major payment portal user events are tracked in the "
+            - code: true
+              text: payment_status_log
+            - text: ". You immediately start brainstorming ways to determine how to measure the success of each subscriptions, and more importantly, where the friction points are. Once you develop some insights, you’ll be able to go back to the product manager with product recommendations to reduce friction and increase successful payments. This will have a large impact on revenue and get you noticed by the leadership team. "
+        - type: paragraph
+          children:
+            - text: ""
+        - type: paragraph
+          children:
+            - text: "⚡️ Determine a way to track subscriptions throughout the payment funnel, identify friction points, and measure payment success. Take into consideration that subscriptions can hit errors, go back to previous statuses, and even get stuck in a status if they abandon the workflow or don’t complete process. "
+        - type: paragraph
+          children:
+            - text: ⚡️ Determine how common errors are. Are they something we should be concerned about? What should we do about them, and does this answer change for the user errors vs. the vendor errors?
+        - type: paragraph
+          children:
+            - text: "⚡️ Write up a project outline for your portfolio that could go onto a README page in GitHub. Don’t forget to include a Title, Executive Summary, Business Problem, Methodology, Skills, Results & Business Recommendations, and Next Steps. Review the How to Add Projects to your Portfolio video if you need to refresh your memory on these sections. I’ll include some starting notes for each of these within the course, but be sure to come up with your own ideas and add onto my examples. "
+  - cellType: MARKDOWN
+    cellId: 3f45a604-4051-4470-b3bf-bf8223b2f0b4 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    config:
+      source: |+
+        <img src="/api/v1/file/ebda9c97-05c1-4dfb-adb8-aaaa7705466e" width="1200"  />
+        <img src="/api/v1/file/836b2d78-91c3-4091-8189-878eba70f945" width="900"  />
+
+
+  - cellType: SQL
+    cellId: d354a1e2-1b68-464b-ad87-384bd8af80c6 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Explanations
+    config:
+      source: |
+        Understanding Business Analysis--
+        *
+        1) Payment widget opened --if error null -Error USer did not start payment process
+        2) Payment Entered
+        3) Payment Submitted     --if error because -Error with payment submission
+        4) Payment Success       --if error because -Error with Vendor
+        5) 3rd Party COMPLETE
+        *
+        --Happy Path : the most optimal user journey with no errors or issues
+        --User error scenario
+            -Happy Path
+            -user error/payment submission
+            -3rd party vendor error with payment processing
+            -subscription not even starting the payment process or opened payment portal
+
+
+        We then use Max() status reached to determine the furthest point in funnel they successfully reach
+        -so measuring payment success
+
+
+        --First I looked up definitions with payment_status_def to understadn the pathway of the subcription (1-5)
+        next - understoud the pathways of different sucription_ID to see if they had a happy path or see what payment staus they experienced error
+      dataFrameCell: false
+      dataConnectionId: 34b92293-aaf9-485d-acf7-db69412e953d
+      resultVariableName: dataframe
+      useRichDisplay: true
+      sqlCellOutputType: PANDAS
+      useQueryMode: false
+      castDecimals: true
+      useNativeDates: true
+      outputFilteredResult: true
+      allowDuplicateColumns: false
+      tableDisplayConfig:
+        pageSize: 50
+        height: null
+        hideIcons: false
+        defaultColumnWidth: null
+        hideIndex: false
+        defaultSortColumn: null
+        defaultSortIndexColumn: null
+        defaultSortDirection: ASC
+        conditionalFormatting: null
+        calcs: null
+        filters: null
+        columnProperties: []
+        columnOrdering: null
+        customColumnOrdering: null
+        pinnedColumns: null
+        hiddenColumns: null
+        pinIndexColumns: false
+        showAggregations: false
+        columnAggregations: null
+  - cellType: TEXT
+    cellId: 0cac3b62-fc42-4e87-935d-b79ee66b6938 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    config:
+      richText:
+        - type: paragraph
+          children:
+            - bold: true
+              text: "The query below pulls data from the "
+            - bold: true
+              code: true
+              text: payment_status_log
+            - bold: true
+              text: " and "
+            - bold: true
+              code: true
+              text: payment_status_definitions
+            - bold: true
+              text: " tables, joining them on "
+            - bold: true
+              code: true
+              text: status_id
+            - bold: true
+              text: " to include status information for a particular subscription ("
+            - bold: true
+              code: true
+              text: subscription_id = '38499'
+            - bold: true
+              text: "). It orders the results first by "
+            - bold: true
+              code: true
+              text: subscription_id
+            - bold: true
+              text: " (to group all events for the same subscription) and then by "
+            - bold: true
+              code: true
+              text: movement_date
+            - bold: true
+              text: " (to track status changes over time). This query is useful for tracking the progress of a specific subscription through the payment portal and understanding its status at each stage."
+  - cellType: SQL
+    cellId: f3c874c0-0ab5-43ed-8292-2477f79281f8 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    config:
+      source: |-
+        select
+            *
+        from
+            public.payment_status_log psl --only subsciptions that have used the payment portal will be PSL
+        join
+            public.payment_status_definitions def
+            on psl.status_id = def.status_id
+        where
+            subscription_id = '38499'
+        order by
+            subscription_id, --to see all subscriptions together. only subs that have used the payment portal
+            movement_date   --to see by date
+      dataFrameCell: false
+      dataConnectionId: 34b92293-aaf9-485d-acf7-db69412e953d
+      resultVariableName: dataframe_2
+      useRichDisplay: true
+      sqlCellOutputType: PANDAS
+      useQueryMode: false
+      castDecimals: true
+      useNativeDates: true
+      outputFilteredResult: true
+      allowDuplicateColumns: false
+      tableDisplayConfig:
+        pageSize: 50
+        height: null
+        hideIcons: false
+        defaultColumnWidth: null
+        hideIndex: false
+        defaultSortColumn: null
+        defaultSortIndexColumn: null
+        defaultSortDirection: ASC
+        conditionalFormatting: null
+        calcs: null
+        filters: null
+        columnProperties:
+          - originalName: DESCRIPTION
+            renameTo: null
+            size: 217
+            wrapText: null
+            displayFormat: null
+          - originalName: MOVEMENT_DATE
+            renameTo: null
+            size: 130
+            wrapText: null
+            displayFormat: null
+          - originalName: PAYMENT_STATUS_DEFINITIONS.STATUS_ID
+            renameTo: null
+            size: 213
+            wrapText: null
+            displayFormat: null
+          - originalName: PAYMENT_STATUS_LOG.STATUS_ID
+            renameTo: null
+            size: 280
+            wrapText: null
+            displayFormat: null
+          - originalName: STATUS_MOVEMENT_ID
+            renameTo: null
+            size: 180
+            wrapText: null
+            displayFormat: null
+          - originalName: SUBSCRIPTION_ID
+            renameTo: null
+            size: 150
+            wrapText: null
+            displayFormat: null
+          - originalName: row-index-0
+            renameTo: null
+            size: 46
+            wrapText: null
+            displayFormat: null
+        columnOrdering: null
+        customColumnOrdering: null
+        pinnedColumns: null
+        hiddenColumns: null
+        pinIndexColumns: false
+        showAggregations: false
+        columnAggregations: null
+  - cellType: TEXT
+    cellId: 54a2dfdc-9dbf-4957-981a-ac6162fc0083 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    config:
+      richText:
+        - type: paragraph
+          children:
+            - bold: true
+              text: This query below retrieves the most recent payment status for each subscription by selecting the maximum (status_id) from the (payment_status_log) table, joined with the (payment_status_definitions) table to get descriptions of each status. It groups the results by (subscription_id) to show the latest payment step for each subscription, excluding those stuck in error or with incomplete data. The purpose is to track the most recent stage in the payment process for each subscription.
+  - cellType: SQL
+    cellId: e8224afb-2890-4463-ba6c-c3a8bfe6bbc3 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Does not include subs stuck in error not nulls
+    config:
+      source: |-
+        select
+            psl.subscription_id,
+            max(psl.status_id) as max_status --does not include stuck in error
+        from
+            public.payment_status_log psl -- shows what payment step they are in the portal
+        join
+            public.payment_status_definitions def -- shows description column of each payment step
+            on psl.status_id = def.status_id
+        group by
+            1
+
+        --starting new query below to incorporate nulls and those who are stuck in true errors 
+      dataFrameCell: false
+      dataConnectionId: 34b92293-aaf9-485d-acf7-db69412e953d
+      resultVariableName: dataframe_3
+      useRichDisplay: true
+      sqlCellOutputType: PANDAS
+      useQueryMode: false
+      castDecimals: true
+      useNativeDates: true
+      outputFilteredResult: true
+      allowDuplicateColumns: false
+      tableDisplayConfig:
+        pageSize: 50
+        height: null
+        hideIcons: false
+        defaultColumnWidth: null
+        hideIndex: false
+        defaultSortColumn: null
+        defaultSortIndexColumn: null
+        defaultSortDirection: ASC
+        conditionalFormatting: null
+        calcs: null
+        filters: null
+        columnProperties:
+          - originalName: COUNT(MAX_STATUS = 5)
+            renameTo: null
+            size: 192
+            wrapText: null
+            displayFormat: null
+          - originalName: MAX_STATUS
+            renameTo: null
+            size: 125
+            wrapText: null
+            displayFormat: null
+          - originalName: SUBSCRIPTION_ID
+            renameTo: null
+            size: 157
+            wrapText: null
+            displayFormat: null
+          - originalName: row-index-0
+            renameTo: null
+            size: 46
+            wrapText: null
+            displayFormat: null
+        columnOrdering: null
+        customColumnOrdering: null
+        pinnedColumns: null
+        hiddenColumns: null
+        pinIndexColumns: false
+        showAggregations: false
+        columnAggregations: null
+  - cellType: TEXT
+    cellId: 2de9d64e-b3d7-4d8f-a2fc-a58f1af5be1a # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    config:
+      richText:
+        - type: li
+          children:
+            - type: lic
+              children:
+                - bold: true
+                  text: max_status_reached CTE
+                - text: ":"
+            - type: ul
+              children:
+                - type: li
+                  children:
+                    - type: lic
+                      children:
+                        - text: "This section identifies the most recent payment status for each subscription based on the "
+                        - code: true
+                          text: payment_status_log
+                        - text: "table, using "
+                        - code: true
+                          text: max(psl.status_id)
+                        - text: " to capture the latest status reached."
+        - type: li
+          children:
+            - type: lic
+              children:
+                - bold: true
+                  text: payment_funnel_stages CTE
+                - text: ":"
+            - type: ul
+              children:
+                - type: li
+                  children:
+                    - type: lic
+                      children:
+                        - text: "Joins the "
+                        - code: true
+                          text: subscriptions
+                        - text: " table with the "
+                        - code: true
+                          text: max_status_reached
+                        - text: " CTE to combine subscription data with the most recent payment status."
+                - type: li
+                  children:
+                    - type: lic
+                      children:
+                        - text: "Categorizes the subscriptions into different stages in the payment funnel, such as:"
+                    - type: ul
+                      children:
+                        - type: li
+                          children:
+                            - type: lic
+                              children:
+                                - text: '"Payment Widget Opened"'
+                        - type: li
+                          children:
+                            - type: lic
+                              children:
+                                - text: '"Payment Entered"'
+                        - type: li
+                          children:
+                            - type: lic
+                              children:
+                                - text: '"Payment Submitted"'
+                        - type: li
+                          children:
+                            - type: lic
+                              children:
+                                - text: '"Payment Success"'
+                        - type: li
+                          children:
+                            - type: lic
+                              children:
+                                - text: '"Complete"'
+                - type: li
+                  children:
+                    - type: lic
+                      children:
+                        - text: Also tracks if the user has started the payment process and whether the payment has been completed successfully.
+        - type: li
+          children:
+            - type: lic
+              children:
+                - text: This query helps to track and analyze how well users are progressing through the payment funnel, identify issues, and calculate key metrics related to subscription payments.
+            - type: ul
+              children:
+                - type: li
+                  children:
+                    - type: lic
+                      children:
+                        - text: "Aggregates the data to calculate:"
+                    - type: ul
+                      children:
+                        - type: li
+                          children:
+                            - type: lic
+                              children:
+                                - code: true
+                                  text: num_subs_completed_payment
+                                - text: ": The number of subscriptions that completed the payment."
+                        - type: li
+                          children:
+                            - type: lic
+                              children:
+                                - code: true
+                                  text: num_subs_started_payment
+                                - text: ": The number of subscriptions that started the payment process."
+                        - type: li
+                          children:
+                            - type: lic
+                              children:
+                                - code: true
+                                  text: total_subs
+                                - text: ": The total number of subscriptions."
+                        - type: li
+                          children:
+                            - type: lic
+                              children:
+                                - bold: true
+                                  text: Conversion Rate
+                                - text: ": Percentage of subscriptions that completed the payment process relative to total subscriptions."
+                        - type: li
+                          children:
+                            - type: lic
+                              children:
+                                - bold: true
+                                  text: Workflow Completion Rate
+                                - text: ": Percentage of subscriptions that completed the full payment process compared to those who started it."
+  - cellType: BLOCK
+    cellId: 21ba0c9d-a28a-43d2-b1bd-5b6a71354095 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    config:
+      blockConfig:
+        sqlCellId: 1fa6498d-a075-4b3d-a694-8e88cd2f6eb6
+        chartCellId: 587126a5-afe2-4196-bd1a-3c56935e89f0
+        activeTab: chart
+      cells:
+        - cellType: SQL
+          cellId: 1fa6498d-a075-4b3d-a694-8e88cd2f6eb6
+          cellLabel: Payment Funnel Stage by Year
+          config:
+            source: |-
+              with max_status_reached as(
+              select
+                  subscription_id,
+                  max(psl.status_id) as max_status --does not include stuck in error
+              from
+                  public.payment_status_log psl -- shows what payment step they are in the portal
+              group by
+                  1
+              ) --pull in subscriptions table to pull is current status field and see max and current status reach
+              ,
+              payment_funnel_stages as(    --summarize data payment funnel stage
+              select
+                  subs.subscription_id,
+                  date_trunc('year', order_date) as order_year,
+                  current_payment_status,
+                  max_status,  
+                  case when max_status = 1 then 'Payment Widget Opened' --discriptive categorie for stakeholders using current payment and max status
+                      when max_status = 2 then 'Payment Entered'
+                      when max_status = 3 and current_payment_status != 0 then 'Payment Submitted'
+                      when max_status = 3 and current_payment_status = 0 then 'User Error w/ Payment Submission'
+                      when max_status = 4 and current_payment_status != 0 then 'Payment Success'
+                      when max_status = 4 and current_payment_status = 0 then 'User Error w/ Payment Submission'
+                      when max_status = 5 then 'Complete'
+                      when max_status is null then 'User Has Not Started Payment Process'  --sub_id is not in the payment log or has no statuses (did not attempt to pay)
+                      end as payment_funnel_stage
+              from
+                  public.subscriptions as subs
+              left join
+                  max_status_reached m -- left join becasue not every subscription is in the max_status reached, and not filter out the subs that have not started the payment process
+                  on subs.subscription_id = m.subscription_id
+              )
+              select
+                  payment_funnel_stage,
+                  order_year,
+                  count(*) as num_subs --count number of subscriptions in each category
+              from
+                  payment_funnel_stages
+              group by
+                  1, 2
+              order by
+                  2 desc
+              --largest categorie is User has not started payment process with 24, (means we need to start pushing users to pay for there subs)
+              --add in dates to create a more valuable visual
+            dataFrameCell: false
+            dataConnectionId: 34b92293-aaf9-485d-acf7-db69412e953d
+            resultVariableName: dataframe_4
+            useRichDisplay: true
+            sqlCellOutputType: PANDAS
+            useQueryMode: false
+            castDecimals: true
+            useNativeDates: true
+            outputFilteredResult: true
+            allowDuplicateColumns: false
+            tableDisplayConfig:
+              pageSize: 50
+              height: null
+              hideIcons: false
+              defaultColumnWidth: null
+              hideIndex: false
+              defaultSortColumn: null
+              defaultSortIndexColumn: null
+              defaultSortDirection: ASC
+              conditionalFormatting: null
+              calcs: null
+              filters: null
+              columnProperties:
+                - originalName: CURRENT_PAYMENT_STATUS
+                  renameTo: null
+                  size: 211
+                  wrapText: null
+                  displayFormat: null
+                - originalName: MAX_STATUS
+                  renameTo: null
+                  size: 125
+                  wrapText: null
+                  displayFormat: null
+                - originalName: NUM_SUBS
+                  renameTo: null
+                  size: 114
+                  wrapText: null
+                  displayFormat: null
+                - originalName: PAYMENT_FUNNEL_STAGE
+                  renameTo: null
+                  size: 271
+                  wrapText: null
+                  displayFormat: null
+                - originalName: SUBSCRIPTION_ID
+                  renameTo: null
+                  size: 157
+                  wrapText: null
+                  displayFormat: null
+                - originalName: row-index-0
+                  renameTo: null
+                  size: 46
+                  wrapText: null
+                  displayFormat: null
+              columnOrdering: null
+              customColumnOrdering: null
+              pinnedColumns: null
+              hiddenColumns: null
+              pinIndexColumns: false
+              showAggregations: false
+              columnAggregations: null
+        - cellType: CHARTV2
+          cellId: 587126a5-afe2-4196-bd1a-3c56935e89f0
+          cellLabel: Payment Funnel Stage by Year
+          config:
+            height: null
+            chartSpec:
+              type: layered
+              layers:
+                - id: 9eeafa62-e7d4-4be6-a682-5007ecb675bb
+                  xAxis:
+                    type: datetime
+                    style:
+                      grid:
+                        style: solid
+                      ticks: {}
+                      labels: {}
+                    title: Order Year
+                    timeUnit: year
+                    dataFrameColumn: ORDER_YEAR
+                  series:
+                    - id: 0eed2ae6-9695-4448-b30b-dce893471c13
+                      type: bar
+                      axis:
+                        type: number
+                        style:
+                          grid:
+                            style: solid
+                          ticks: {}
+                          labels: {}
+                        title: Subscriptions
+                        aggregate: sum
+                      dataFrameColumns:
+                        - NUM_SUBS
+                      colorDataFrameColumn: PAYMENT_FUNNEL_STAGE
+                      colorOrder: ascending
+                      color:
+                        type: series
+                        dataType: string
+                        colorsBySeriesValues: {}
+                      opacity:
+                        type: static
+                        value: 1
+                      tooltip:
+                        type: auto
+                      barWidth: 1
+                      orientation: vertical
+                      layout: stacked
+                  dataFrame: dataframe_4
+              settings:
+                legend:
+                  position: right
+                tooltip: true
+                selectionEnabled: false
+            chartSelection: {}
+            colorMappings:
+              Complete: "#4C78A8"
+              Payment Entered: "#F58518"
+              Payment Success: "#72B7B2"
+              Payment Submitted: "#E45756"
+              Payment Widget Opened: "#54A24B"
+              User Error w/ Payment Submission: "#EECA3B"
+              User Has Not Started Payment Process: "#B279A2"
+            resultVariable: chart_result
+            outputResult: false
+            displayType: CHART
+            displayTableConfig: null
+  - cellType: CHARTV2
+    cellId: 07df658d-ee4b-4345-817f-6825a2511e2a # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Payment Funnel Stage by Year
+    config:
+      height: null
+      chartSpec:
+        type: layered
+        layers:
+          - id: 9eeafa62-e7d4-4be6-a682-5007ecb675bb
+            xAxis:
+              type: datetime
+              style:
+                grid:
+                  style: solid
+                ticks: {}
+                labels: {}
+              title: Order Year
+              timeUnit: year
+              dataFrameColumn: ORDER_YEAR
+            series:
+              - id: 0eed2ae6-9695-4448-b30b-dce893471c13
+                type: line
+                axis:
+                  type: number
+                  style:
+                    grid:
+                      style: solid
+                    ticks: {}
+                    labels: {}
+                  title: Sum of Subscription ID
+                  aggregate: sum
+                dataFrameColumns:
+                  - NUM_SUBS
+                colorDataFrameColumn: PAYMENT_FUNNEL_STAGE
+                colorOrder: ascending
+                color:
+                  type: series
+                  dataType: string
+                  colorsBySeriesValues: {}
+                opacity:
+                  type: static
+                  value: 1
+                tooltip:
+                  type: auto
+                point: false
+                stroke: solid
+            dataFrame: dataframe_4
+        settings:
+          legend:
+            position: right
+          tooltip: true
+          selectionEnabled: false
+      chartSelection: {}
+      colorMappings:
+        Complete: "#4C78A8"
+        Payment Entered: "#F58518"
+        Payment Success: "#72B7B2"
+        Payment Submitted: "#E45756"
+        Payment Widget Opened: "#54A24B"
+        User Error w/ Payment Submission: "#EECA3B"
+        User Has Not Started Payment Process: "#B279A2"
+      resultVariable: chart_result_2
+      outputResult: false
+      displayType: CHART
+      displayTableConfig: null
+  - cellType: TEXT
+    cellId: 106303d3-819e-47cd-b2b0-d62b5681fef7 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    config:
+      richText:
+        - type: paragraph
+          children:
+            - text: "This query below shows how many subscriptions go through the payment process.  "
+        - type: paragraph
+          children:
+            - text: "1. Finds the last payment step each subscription reached.  "
+        - type: paragraph
+          children:
+            - text: "2. Joins with subscription data to check if they started or completed payment.  "
+        - type: paragraph
+          children:
+            - text: "3. Counts how many finished paying, how many started, and total subscriptions. "
+        - type: paragraph
+          children:
+            - text: "4. Calculates two key percentages:"
+        - type: paragraph
+          children:
+            - text: "   - Conversion Rate: How many subscriptions fully paid out of all.  "
+        - type: paragraph
+          children:
+            - text: "   - Workflow Completion Rate: How many finished paying out of those who started.  "
+        - type: paragraph
+          children:
+            - text: This helps see where people drop off in the payment process.
+  - cellType: SQL
+    cellId: 476de8dd-7445-4266-ae35-2275734f39d1 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    config:
+      source: |
+        with max_status_reached as(
+        select
+            subscription_id,
+            max(psl.status_id) as max_status --does not include stuck in error
+        from
+            public.payment_status_log psl -- shows what payment step they are in the portal
+        group by
+            1
+        ) --pull in subscriptions table to pull is current status field and see max and current status reach
+        ,
+        payment_funnel_stages as(    --summarize data payment funnel stage
+        select
+            subs.subscription_id,
+            date_trunc('year', order_date) as order_year,
+            current_payment_status,
+            max_status,  
+
+            case when max_status = 5 then 1 else 0 end as completed_payment,
+            case when max_status is null then 1 else 0 end as started_payment
+        from
+            public.subscriptions as subs
+        left join
+            max_status_reached m -- left join becasue not every subscription is in the max_status reached, and not filter out the subs that have not started the payment process
+            on subs.subscription_id = m.subscription_id
+        )
+        select
+            sum(completed_payment) as num_subs_completed_payment,
+            sum(started_payment) as num_subs_started_payment,
+            count(*) as total_subs,
+            num_subs_completed_payment * 100 / total_subs as conversion_rate, --% of subs that converted to paid subs(starts signing up, ends completed payment)
+            num_subs_completed_payment * 100 / num_subs_started_payment as workflow_completed_rate --% of subs completed a process (process starts when opening portal, ends at completed payment)
+        from
+            payment_funnel_stages
+      dataFrameCell: false
+      dataConnectionId: 34b92293-aaf9-485d-acf7-db69412e953d
+      resultVariableName: dataframe_5
+      useRichDisplay: true
+      sqlCellOutputType: PANDAS
+      useQueryMode: false
+      castDecimals: true
+      useNativeDates: true
+      outputFilteredResult: true
+      allowDuplicateColumns: false
+      tableDisplayConfig:
+        pageSize: 50
+        height: null
+        hideIcons: false
+        defaultColumnWidth: null
+        hideIndex: false
+        defaultSortColumn: null
+        defaultSortIndexColumn: null
+        defaultSortDirection: ASC
+        conditionalFormatting: null
+        calcs: null
+        filters: null
+        columnProperties:
+          - originalName: CONVERSION_RATE
+            renameTo: null
+            size: 162
+            wrapText: null
+            displayFormat: null
+          - originalName: NUM_SUBS_COMPLETED_PAYMENT
+            renameTo: null
+            size: 246
+            wrapText: null
+            displayFormat: null
+          - originalName: NUM_SUBS_STARTED_PAYMENT
+            renameTo: null
+            size: 229
+            wrapText: null
+            displayFormat: null
+          - originalName: ORDER_YEAR
+            renameTo: null
+            size: 126
+            wrapText: null
+            displayFormat: null
+          - originalName: TOTAL_SUBS
+            renameTo: null
+            size: 123
+            wrapText: null
+            displayFormat: null
+          - originalName: WORKFLOW_COMPLETED_RATE
+            renameTo: null
+            size: 225
+            wrapText: null
+            displayFormat: null
+          - originalName: row-index-0
+            renameTo: null
+            size: 39
+            wrapText: null
+            displayFormat: null
+        columnOrdering: null
+        customColumnOrdering: null
+        pinnedColumns: null
+        hiddenColumns: null
+        pinIndexColumns: false
+        showAggregations: false
+        columnAggregations: null
+  - cellType: TEXT
+    cellId: b7ef147d-621b-4fc3-a04d-789eb743f42b # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    config:
+      richText:
+        - type: paragraph
+          children:
+            - bold: true
+              text: "This query below checks how many subscriptions had payment errors.  "
+        - type: paragraph
+          children:
+            - bold: true
+              text: "1. Finds all subscriptions that had an error (status = 0) and removes duplicates. "
+        - type: paragraph
+          children:
+            - bold: true
+              text: "2. Joins with all subscriptions to keep a full list, even those without errors.  "
+        - type: paragraph
+          children:
+            - bold: true
+              text: "3. Calculates the percentage of subscriptions that faced an error by dividing error cases by total subscriptions.  "
+        - type: paragraph
+          children:
+            - bold: true
+              text: This helps understand how often payment errors happen.
+  - cellType: BLOCK
+    cellId: f514f8b6-1218-4c5a-bc20-b2574d32eaf2 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    config:
+      blockConfig:
+        sqlCellId: f06b1cbb-2d1a-4cf1-9ad7-d04f87056fd9
+        chartCellId: 108f5a8c-784f-4199-aa3b-f878e85f6999
+        activeTab: display
+      cells:
+        - cellType: SQL
+          cellId: f06b1cbb-2d1a-4cf1-9ad7-d04f87056fd9
+          cellLabel: null
+          config:
+            source: |
+              with error_subs as(
+              select
+                  distinct subscription_id --dedupe it is possible to hit dup overcounting
+              from
+                  public.payment_status_log
+              where
+                  status_id = 0
+              )
+              select
+                  count(err.subscription_id) * 100 / count(subs.subscription_id) as perc_subs_hit_error --numerator is the error subs / denominator num of base subscriptions
+              from
+                  public.subscriptions subs --have all subscriptions as a base
+              left join
+                  error_subs err --left join who hit errors
+                  on subs.subscription_id = err.subscription_id
+            dataFrameCell: false
+            dataConnectionId: 34b92293-aaf9-485d-acf7-db69412e953d
+            resultVariableName: dataframe_6
+            useRichDisplay: true
+            sqlCellOutputType: PANDAS
+            useQueryMode: false
+            castDecimals: true
+            useNativeDates: true
+            outputFilteredResult: true
+            allowDuplicateColumns: false
+            tableDisplayConfig:
+              pageSize: 50
+              height: null
+              hideIcons: false
+              defaultColumnWidth: null
+              hideIndex: false
+              defaultSortColumn: null
+              defaultSortIndexColumn: null
+              defaultSortDirection: ASC
+              conditionalFormatting: null
+              calcs: null
+              filters: null
+              columnProperties:
+                - originalName: PERC_SUBS_HIT_ERROR
+                  renameTo: null
+                  size: 188
+                  wrapText: null
+                  displayFormat: null
+                - originalName: row-index-0
+                  renameTo: null
+                  size: 39
+                  wrapText: null
+                  displayFormat: null
+              columnOrdering: null
+              customColumnOrdering: null
+              pinnedColumns: null
+              hiddenColumns: null
+              pinIndexColumns: false
+              showAggregations: false
+              columnAggregations: null
+        - cellType: CHARTV2
+          cellId: 108f5a8c-784f-4199-aa3b-f878e85f6999
+          cellLabel: null
+          config:
+            height: null
+            chartSpec:
+              type: layered
+              layers:
+                - id: f1114cfb-08d3-488d-b921-20d6ba11e158
+                  xAxis:
+                    type: string
+                    style:
+                      grid:
+                        style: solid
+                      ticks: {}
+                      labels: {}
+                    dataFrameColumn: PERC_SUBS_HIT_ERROR
+                  series:
+                    - id: 478fb341-a376-482c-b789-7ac6c179fcdb
+                      type: bar
+                      axis:
+                        type: number
+                        style:
+                          grid:
+                            style: solid
+                          ticks: {}
+                          labels: {}
+                        aggregate: count
+                      dataFrameColumns:
+                        - _HEX_COUNT_STAR_ARG_
+                      colorOrder: ascending
+                      color:
+                        type: static
+                      opacity:
+                        type: static
+                        value: 1
+                      tooltip:
+                        type: auto
+                      barWidth: 1
+                      orientation: vertical
+                      layout: grouped
+                  dataFrame: dataframe_6
+              settings:
+                legend:
+                  position: right
+                tooltip: true
+                selectionEnabled: false
+            chartSelection: {}
+            colorMappings: {}
+            resultVariable: chart_result
+            outputResult: false
+            displayType: CHART
+            displayTableConfig: null
+  - cellType: TEXT
+    cellId: c1098001-c4f9-4ff7-9b05-81da24970a1b # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    config:
+      richText:
+        - type: paragraph
+          children:
+            - bold: true
+              text: "This query below checks which subscriptions had payment errors.  "
+        - type: paragraph
+          children:
+            - bold: true
+              text: 1. Finds all subscriptions that had an error (status = 0) and removes duplicates.
+        - type: paragraph
+          children:
+            - bold: true
+              text: "2. Joins with all subscriptions to keep every subscription in the list.  "
+        - type: paragraph
+          children:
+            - bold: true
+              text: "3. Marks each subscription as \"1\" if it had an error and \"0\" if it didn't. "
+        - type: paragraph
+          children:
+            - bold: true
+              text: This helps track which customers faced payment issues.
+  - cellType: BLOCK
+    cellId: 4ae0f0cb-9183-4f56-bdea-fab277b24d67 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    config:
+      blockConfig:
+        sqlCellId: 88fab54d-6f86-4b36-9d5d-c538b548a2de
+        chartCellId: 2f71557d-93d3-4c7c-8374-edcb74e31ef7
+        activeTab: chart
+      cells:
+        - cellType: SQL
+          cellId: 88fab54d-6f86-4b36-9d5d-c538b548a2de
+          cellLabel: Subscriptions Has Error
+          config:
+            source: |-
+              with error_subs as(
+              select
+                  distinct subscription_id
+              from
+                  public.payment_status_log
+              where
+                  status_id = 0
+              )
+              select
+                  subs.subscription_id,
+                  case
+                      when err.subscription_id is not null then 1
+                      else 0
+                      end as has_error
+              from
+                  public.subscriptions subs
+              left join
+                  error_subs err --left join who hit errors
+                  on subs.subscription_id = err.subscription_id
+            dataFrameCell: false
+            dataConnectionId: 34b92293-aaf9-485d-acf7-db69412e953d
+            resultVariableName: dataframe_7
+            useRichDisplay: true
+            sqlCellOutputType: PANDAS
+            useQueryMode: false
+            castDecimals: true
+            useNativeDates: true
+            outputFilteredResult: true
+            allowDuplicateColumns: false
+            tableDisplayConfig:
+              pageSize: 50
+              height: null
+              hideIcons: false
+              defaultColumnWidth: null
+              hideIndex: false
+              defaultSortColumn: null
+              defaultSortIndexColumn: null
+              defaultSortDirection: ASC
+              conditionalFormatting: null
+              calcs: null
+              filters: null
+              columnProperties:
+                - originalName: HAS_ERROR
+                  renameTo: null
+                  size: 120
+                  wrapText: null
+                  displayFormat: null
+                - originalName: SUBSCRIPTION_ID
+                  renameTo: null
+                  size: 157
+                  wrapText: null
+                  displayFormat: null
+                - originalName: row-index-0
+                  renameTo: null
+                  size: 46
+                  wrapText: null
+                  displayFormat: null
+              columnOrdering: null
+              customColumnOrdering: null
+              pinnedColumns: null
+              hiddenColumns: null
+              pinIndexColumns: false
+              showAggregations: false
+              columnAggregations: null
+        - cellType: CHARTV2
+          cellId: 2f71557d-93d3-4c7c-8374-edcb74e31ef7
+          cellLabel: Subscriptions Has Error
+          config:
+            height: null
+            chartSpec:
+              type: layered
+              layers:
+                - id: 22f1466d-9e8d-4480-b633-3e4d4aca3d8e
+                  xAxis:
+                    type: string
+                    style:
+                      grid:
+                        style: solid
+                      ticks: {}
+                      labels: {}
+                    title: Complete vs Error
+                    dataFrameColumn: HAS_ERROR
+                  series:
+                    - id: f255ce74-0a51-41ac-9684-d1db4b3c18a3
+                      type: bar
+                      axis:
+                        type: number
+                        style:
+                          grid:
+                            style: solid
+                          ticks: {}
+                          labels: {}
+                        title: Sum of Subscription ID
+                        aggregate: sum
+                        referenceLines: []
+                      dataFrameColumns:
+                        - SUBSCRIPTION_ID
+                      colorOrder:
+                        - "0"
+                        - "1"
+                      color:
+                        type: series
+                        aggregate: sum
+                        defaultColor: "#4C78A8"
+                        colorsBySeriesValues:
+                          "0": "#4C78A8"
+                          "1": "#F58518"
+                      opacity:
+                        type: static
+                        value: 1
+                      tooltip:
+                        type: auto
+                      dataLabels:
+                        position: inside-center
+                      barWidth: 1
+                      orientation: vertical
+                      layout: grouped
+                  dataFrame: dataframe_7
+              settings:
+                legend:
+                  position: right
+                tooltip: true
+                selectionEnabled: false
+            chartSelection: {}
+            colorMappings: {}
+            resultVariable: chart_result
+            outputResult: false
+            displayType: CHART
+            displayTableConfig: null
+appLayout:
+  visibleMetadataFields:
+    - NAME
+    - DESCRIPTION
+    - AUTHOR
+    - LAST_EDITED
+    - LAST_RUN
+    - CATEGORIES
+    - STATUS
+    - TABLE_OF_CONTENTS
+  fullWidth: false
+  tabs:
+    - name: Tab 1
+      rows:
+        - columns:
+            - start: 0
+              end: 120
+              elements:
+                - showSource: false
+                  hideOutput: false
+                  type: CELL
+                  cellId: 88fab54d-6f86-4b36-9d5d-c538b548a2de
+                  sharedFilterId: null
+                  height: null
+                  showLabel: true
+sharedFilters: []
